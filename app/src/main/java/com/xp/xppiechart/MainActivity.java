@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.xp.xppiechart.Bean.CakeValue;
 import com.xp.xppiechart.view.CakeSurfaceView;
 import com.xp.xppiechart.view.PieChartView;
 
@@ -23,18 +24,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        List<CakeSurfaceView.CakeValue> itemBeanList = new ArrayList<>();
-        itemBeanList.add(new CakeSurfaceView.CakeValue("可用余额",200,"#FABD3B"));
-        itemBeanList.add(new CakeSurfaceView.CakeValue("待收总额",300,"#F9943C"));
-        itemBeanList.add(new CakeSurfaceView.CakeValue("投资冻结",100,"#FFD822"));
-        itemBeanList.add(new CakeSurfaceView.CakeValue("提现冻结",250,"#F7602B"));
+        List<CakeValue> itemBeanList = new ArrayList<>();
+        itemBeanList.add(new CakeValue("可用余额",200,"#FABD3B"));
+        itemBeanList.add(new CakeValue("待收总额",300,"#F9943C"));
+        itemBeanList.add(new CakeValue("投资冻结",100,"#FFD822"));
+        itemBeanList.add(new CakeValue("提现冻结",250,"#F7602B"));
         pieChart.setData(itemBeanList);
 
-        List<PieChartView.CakeValue> itemBeanLists = new ArrayList<>();
-        itemBeanLists.add(new PieChartView.CakeValue("可用余额",100,"#FABD3B"));
-        itemBeanLists.add(new PieChartView.CakeValue("待收总额",500,"#F9943C"));
-        itemBeanLists.add(new PieChartView.CakeValue("投资冻结",200,"#FFD822"));
-        itemBeanLists.add(new PieChartView.CakeValue("提现冻结",300,"#F7602B"));
+        List<CakeValue> itemBeanLists = new ArrayList<>();
+        itemBeanLists.add(new CakeValue("可用余额",100,"#FABD3B"));
+        itemBeanLists.add(new CakeValue("待收总额",500,"#F9943C"));
+        itemBeanLists.add(new CakeValue("投资冻结",200,"#FFD822"));
+        itemBeanLists.add(new CakeValue("提现冻结",300,"#F7602B"));
         pieChartNow.setData(itemBeanLists);
     }
 }

@@ -8,6 +8,8 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.xp.xppiechart.Bean.CakeValue;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,49 +167,5 @@ public class PieChartView extends View {
         invalidate();
     }
 
-    public static class CakeValue {
-        private String itemType;
-        private double itemValue;
-        private String colors;
-        private int sw;
 
-        public CakeValue(String itemType, double itemValue, String color) {
-            this.itemType = itemType;
-            this.itemValue = itemValue;
-            this.colors = color;
-        }
-
-        public String getItemType() {
-            return itemType;
-        }
-
-        public void setItemType(String itemType) {
-            this.itemType = itemType;
-        }
-
-        public double getItemValue() {
-            return itemValue;
-        }
-
-        public void setItemValue(float itemValue) {
-            this.itemValue = itemValue;
-        }
-
-        public String getColors() {
-            return colors;
-        }
-
-        public void setColors(String color) {
-            this.colors = color;
-        }
-
-        public int getSw() {
-            return sw;
-        }
-
-        public void setSw(int sw) {
-            this.sw = sw;
-        }
-
-    }
 }
