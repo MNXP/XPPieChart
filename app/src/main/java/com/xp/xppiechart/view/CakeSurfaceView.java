@@ -53,7 +53,7 @@ public class CakeSurfaceView extends SurfaceView implements
      * 旋转展现动画
      */
     private ValueAnimator cakeValueAnimator;
-    private int drawCount = 0;
+    private boolean isFirst = true;
     /**
      * 动画持续时间
      */
@@ -186,10 +186,10 @@ public class CakeSurfaceView extends SurfaceView implements
     @Override
     protected void onDraw(Canvas canvas) {
 
-        if (drawCount == 0&& isDrawByAnim) {
+        if (isFirst && isDrawByAnim) {
             drawCakeByAnim();
         }
-        drawCount = 1;
+        isFirst = false;
     }
 
     @Override
@@ -299,7 +299,7 @@ public class CakeSurfaceView extends SurfaceView implements
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (drawCount!=0||!isDrawByAnim)
+        if (!isFirst||!isDrawByAnim)
             drawCake();
     }
 
