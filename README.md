@@ -1,5 +1,4 @@
 # XPPieChart
-饼状图
 ![image](https://github.com/MNXP/XPPieChart/blob/master/image/12.gif)
 
     增加立体效果，提取配置参数
