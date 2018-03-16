@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CakeSurfaceView">
+        <attr name="isDrawByAnim" format="boolean"/>//是否动画
+        <attr name="isSolid" format="boolean"/>//是否立体
+        <attr name="duration" format="integer|reference"/>//动画时间
+        <attr name="defaultColor" format="string"/>//默认颜色
+
+        <attr name="ringWidth" format="integer|reference"/>//圆环宽度
+        <attr name="solidWidth" format="integer|reference"/>//立体宽度
+        <attr name="fineTuningWidth" format="integer|reference"/>//微调宽度
+    </declare-styleable>
+
+
+
+</resources>

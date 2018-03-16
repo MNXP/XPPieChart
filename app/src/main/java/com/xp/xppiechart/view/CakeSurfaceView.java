@@ -4,6 +4,7 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,23 +18,21 @@ import android.view.SurfaceView;
 import android.view.animation.DecelerateInterpolator;
 
 import com.xp.xppiechart.Bean.CakeValue;
+import com.xp.xppiechart.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 饼图
- *
  */
 public class CakeSurfaceView extends SurfaceView implements
         SurfaceHolder.Callback {
-    private static final float ANGLE_NUM = 3.6f;
-    private static final boolean isDrawByAnim = true;
+    private float ANGLE_NUM = 3.6f;
+    private boolean isDrawByAnim = true;
+    private boolean isSolid = true;
+    private String defaultColor ="#FABD3B";
     private Paint paint;
-    /**
-     * 起始角度
-     */
-    private float startAngle = 0;
     private List<CakeValue> cakeValues = new ArrayList<>();
 
     //绘制的角度
@@ -57,26 +56,41 @@ public class CakeSurfaceView extends SurfaceView implements
     /**
      * 动画持续时间
      */
-    private static final int DURATION = 2000;
+    private int duration = 2000;
 
 
     private RectF pieOval;
+    private RectF pieOvalWrite;
     private RectF pieOvalIn;
     private int screenW;
 
     private Paint piePaintIn;
 
-    public CakeSurfaceView(Context context) {
-        super(context);
-        init(context);
-    }
 
     public CakeSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs);
     }
 
-    private void init(Context context) {
+    private void init(Context context, AttributeSet attrs) {
+        int width = 20;
+        int widthWrite = 5;
+        int widthXY = 10;//微调距离
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CakeSurfaceView);
+        if (typedArray != null) {
+            width = typedArray.getInt(R.styleable.CakeSurfaceView_ringWidth,20);
+            widthWrite = typedArray.getInt(R.styleable.CakeSurfaceView_solidWidth,5);
+            widthXY = typedArray.getInt(R.styleable.CakeSurfaceView_fineTuningWidth,10);
+            duration = typedArray.getInt(R.styleable.CakeSurfaceView_duration,2000);
+            isSolid = typedArray.getBoolean(R.styleable.CakeSurfaceView_isSolid,true);
+            isDrawByAnim = typedArray.getBoolean(R.styleable.CakeSurfaceView_isDrawByAnim,true);
+            defaultColor = typedArray.getString(R.styleable.CakeSurfaceView_defaultColor);
+        }
+        if (defaultColor== null)
+            defaultColor = "#FABD3B";
+        width = DensityUtils.dip2px(context, width);
+        widthWrite = DensityUtils.dip2px(context, widthWrite);
+        widthXY = DensityUtils.dip2px(context, widthXY);
         // 使用渐减interpolator
         holder = this.getHolder();
         holder.addCallback(this);
@@ -92,8 +106,6 @@ public class CakeSurfaceView extends SurfaceView implements
 
         screenW = DensityUtils.getScreenWidth(context);
 
-        int width = DensityUtils.dip2px(context, 15);//圆环宽度
-        int widthXY = DensityUtils.dip2px(context, 10);//微调距离
 
         int pieCenterX = screenW / 2;//饼状图中心X
         int pieCenterY = screenW / 3;//饼状图中心Y
@@ -113,11 +125,23 @@ public class CakeSurfaceView extends SurfaceView implements
         pieOvalIn.right = pieOval.right - width;
         pieOvalIn.bottom = pieOval.bottom - width;
 
+
+        //里面的空白rect
+        pieOvalWrite = new RectF();
+        pieOvalWrite.left = pieOvalIn.left - widthWrite;
+        pieOvalWrite.top = pieOvalIn.top - widthWrite;
+        pieOvalWrite.right = pieOvalIn.right + widthWrite;
+        pieOvalWrite.bottom = pieOvalIn.bottom + widthWrite;
+
         //里面的空白画笔
         piePaintIn = new Paint();
         piePaintIn.setAntiAlias(true);
         piePaintIn.setStyle(Paint.Style.FILL);
-        piePaintIn.setColor(Color.parseColor("#f4f4f4"));
+        piePaintIn.setColor(Color.parseColor("#ffffff"));
+
+        if (typedArray != null) {
+            typedArray.recycle();
+        }
     }
 
     public void setData(List<CakeValue> cakes) {
@@ -134,7 +158,7 @@ public class CakeSurfaceView extends SurfaceView implements
                 }
             }
             if (cakeValues.size() == 0) {
-                cakeValues.add(new CakeValue("", 100, "#FABD3B"));
+                cakeValues.add(new CakeValue("", 100, defaultColor));
             }
             settleCakeValues(cakeValues.size() - 1);
             // 初始化itemframe
@@ -220,16 +244,21 @@ public class CakeSurfaceView extends SurfaceView implements
             for (int i = 0; i < cakeValues.size(); i++) {
                 paint.setColor(Color.parseColor(cakeValues.get(i).getColors()));
                 if (i == 0) {
-                    canvas.drawArc(pieOval, startAngle,
+                    canvas.drawArc(pieOval, 0,
                             (float) cakeValues.get(i).getItemValue() * ANGLE_NUM, true,
                             paint);
                     continue;
                 }
-                canvas.drawArc(pieOval, startAngle + itemFrame[i - 1]
+                canvas.drawArc(pieOval, itemFrame[i - 1]
                         * ANGLE_NUM, (float) cakeValues.get(i).getItemValue()
                         * ANGLE_NUM, true, paint);
             }
 
+            if (isSolid){
+                piePaintIn.setColor(Color.parseColor("#66ffffff"));
+                canvas.drawArc(pieOvalWrite, 0, 360, true, piePaintIn);
+            }
+            piePaintIn.setColor(Color.parseColor("#ffffff"));
             canvas.drawArc(pieOvalIn, 0, 360, true, piePaintIn);
             holder.unlockCanvasAndPost(canvas);
         }
@@ -262,17 +291,21 @@ public class CakeSurfaceView extends SurfaceView implements
             for (int i = 0; i < curItem; i++) {
                 paint.setColor(Color.parseColor(cakeValues.get(i).getColors()));
                 if (i == 0) {
-                    canvas.drawArc(pieOval, startAngle,
+                    canvas.drawArc(pieOval, 0,
                             (float) cakeValues.get(i).getItemValue() * ANGLE_NUM, true,
                             paint);
 
                     continue;
                 }
-                canvas.drawArc(pieOval,itemFrame[i - 1] * ANGLE_NUM,
+                canvas.drawArc(pieOval, itemFrame[i - 1] * ANGLE_NUM,
                         (float) cakeValues.get(i).getItemValue() * ANGLE_NUM, true,
                         paint);
             }
-
+            if (isSolid){
+                piePaintIn.setColor(Color.parseColor("#66ffffff"));
+                canvas.drawArc(pieOvalWrite, 0, 360, true, piePaintIn);
+            }
+            piePaintIn.setColor(Color.parseColor("#ffffff"));
             canvas.drawArc(pieOvalIn, 0, 360, true, piePaintIn);
             holder.unlockCanvasAndPost(canvas);
 
@@ -299,7 +332,7 @@ public class CakeSurfaceView extends SurfaceView implements
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (!isFirst||!isDrawByAnim)
+        if (!isFirst || !isDrawByAnim)
             drawCake();
     }
 
@@ -313,7 +346,6 @@ public class CakeSurfaceView extends SurfaceView implements
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         cakeValueAnimator.cancel();
-        startAngle = 0;
     }
 
     private void initValueAnimator() {
@@ -330,7 +362,7 @@ public class CakeSurfaceView extends SurfaceView implements
                 drawArc();
             }
         });
-        cakeValueAnimator.setDuration(DURATION);
+        cakeValueAnimator.setDuration(duration);
         cakeValueAnimator.setRepeatCount(0);
         cakeValueAnimator.setInterpolator(new DecelerateInterpolator());
         cakeValueAnimator.setRepeatMode(ValueAnimator.RESTART);
